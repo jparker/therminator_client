@@ -1,0 +1,66 @@
+#
+# API configuration.
+#
+# The API key and the endpoint for this particular sensor.
+#
+api:
+  api_key: "xxx"
+  endpoint: "https://therminator.herokuapp.com/api/v1/sensors/XXX"
+
+#
+# LED configuration.
+#
+led:
+  pin: 26
+
+#
+# Temperature sensor.
+#
+# Options include 'sensors.dht22' and 'sensors.ds18b20'. The DHT22 measures
+# both temperature and humidity, but the DS18B20 measures only temperature.
+#
+temperature:
+  sensor: 'dht22'
+  options:
+    pin: 2
+
+  #sensor: 'ds18b20'
+  #options:
+  #  file: "/sys/devices/w1_bus_master1/28-000008763d4a/w1_slave"
+  #  #timeout: 10
+  #  #wait: 0.2
+
+#
+# Light sensor.
+#
+# This section is optional. If present, luminosity will be measured and posted.
+#
+light:
+  sensor: 'photoresistor'
+  options:
+    pins: [22, 17]
+    capacitance: 0.1
+    resistance: 1000
+    #voltage: 3.3
+    #n: 20
+    #timeout: 300
+
+#
+# Logging configuration.
+#
+logging:
+  version: 1
+  formatters:
+    syslog:
+      format: "%(name)s[%(process)d]: %(message)s"
+  handlers:
+    syslog:
+      address: '/dev/log'
+      class: logging.handlers.SysLogHandler
+      level: DEBUG
+      facility: local6
+      formatter: syslog
+  loggers:
+    therminator:
+      handlers: [syslog]
+      level: DEBUG
