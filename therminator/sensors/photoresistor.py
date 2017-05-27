@@ -39,11 +39,10 @@ def read(pins, capacitance, resistance, voltage=3.3, n=20, timeout=300):
         raise
 
 def _multiread(pins, C, R, V, n, timeout):
-    a, b = pins
     try:
         signal.signal(signal.SIGALRM, _timeout)
         signal.alarm(timeout)
-        mean = sum([_read(a, b, C, R, V) for _ in range(n)]) / n
+        mean = sum([_read(pins, C, R, V) for _ in range(n)]) / n
     finally:
         signal.alarm(0)
     T = mean * (math.e-1)/math.e * V
@@ -55,7 +54,8 @@ def _timeout(signum, frame):
         'Try using a smaller capacitor or taking fewer readings.'
     )
 
-def _read(a, b, C, R, V):
+def _read(pins, C, R, V):
+    a, b = pins
     try:
         _discharge(a, b)
         return _charge(a, b)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                         type=int,
                         nargs=2,
                         required=True,
-                        help='GPIO pins (charging, discharing)')
+                        help='GPIO pins (charging, discharging)')
     parser.add_argument('-c', '--capacitance',
                         metavar='C',
                         type=float,
