@@ -1,7 +1,9 @@
 # Therminator Client
 
 The therminator project is a client/server application I'm developing to log
-data about my home.
+data about my home. See
+[therminator\_server](https://github.com/jparker/therminator_server) for the
+server component.
 
 This repository houses the client component. The therminator module interfaces
 with a therminator device attached to a

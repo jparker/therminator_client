@@ -124,6 +124,9 @@ if __name__ == '__main__':
             timeout=args.timeout,
             n=args.n
         )
-        print('resistance={:.1f}Ω'.format(resistance))
+        print(
+            'resistance={:.1f}Ω luminosity={:.1f}' \
+            .format(resistance, 10**6/resistance)
+        )
     finally:
         GPIO.cleanup()
