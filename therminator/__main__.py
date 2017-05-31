@@ -65,7 +65,9 @@ def main():
         led.on()
         t1 = time.time()
 
-        cpu_temp, gpu_temp = lookup_sensor('pi').read()
+        sensor = config['internal']['sensor']
+        kwargs = config['internal']['options']
+        int_temp = lookup_sensor(sensor).read(**kwargs)
 
         sensor = config['temperature']['sensor']
         kwargs = config['temperature']['options']
@@ -82,11 +84,11 @@ def main():
         led.off()
 
         logger.info(
-            'cpu={:.1f}C gpu={:.1f}C'
-            ' temp={:.1f}C humidity={:.1f}%'
+            'int_temp={:.1f}C'
+            ' ext_temp={:.1f}C humidity={:.1f}%'
             ' resistance={:.1f}ohms'
             ' runtime={:.1f}s'
-            .format(cpu_temp, gpu_temp, ext_temp, humidity, resistance, t2-t1))
+            .format(int_temp, ext_temp, humidity, resistance, t2-t1))
         logger.debug('Completed therminator run')
     finally:
         GPIO.cleanup()

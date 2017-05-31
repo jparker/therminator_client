@@ -14,6 +14,14 @@ led:
   pin: 26
 
 #
+# Internal sensor.
+#
+internal:
+  sensor: pi
+  options:
+    file: '/sys/class/thermal/thermal_zone0/temp'
+
+#
 # Temperature sensor.
 #
 # Options include 'sensors.dht22' and 'sensors.ds18b20'. The DHT22 measures
