@@ -2,14 +2,23 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+from datetime import datetime
 import logging
 import logging.config
 import time
 import yaml
 from RPi import GPIO
 
-from . import __version__, SENSORS
+from . import api
 from .led import LED
+from .sensors import *
+
+SENSORS = {
+    'pi': pi,
+    'dht22': dht22,
+    'ds18b20': ds18b20,
+    'photoresistor': photoresistor,
+}
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -24,16 +33,7 @@ def parse_args():
         action='store_true',
         help='Enable debugging output'
     )
-    parser.add_argument(
-        '-v', '--version',
-        action='store_true',
-        help='Display version information and exit'
-    )
     return parser.parse_args()
-
-def display_version_and_exit():
-    print('therminator-client {}'.format(__version__))
-    exit()
 
 def load_config(file):
     with open(file) as f:
@@ -51,8 +51,6 @@ def lookup_sensor(name):
 
 def main():
     args = parse_args()
-    if args.version:
-        display_version_and_exit()
     config = load_config(args.config)
     logger = setup_logger(config['logging'], debug=args.debug)
 
@@ -64,6 +62,8 @@ def main():
         logger.debug('Starting therminator run')
         led.on()
         t1 = time.time()
+
+        timestamp = datetime.utcnow()
 
         sensor = config['internal']['sensor']
         kwargs = config['internal']['options']
@@ -79,6 +79,16 @@ def main():
             resistance = lookup_sensor(sensor).read(**kwargs)
         else:
             resistance = 0
+
+        if 'api' in config:
+            payload=dict(
+                timestamp=timestamp.isoformat(),
+                int_temp=int_temp,
+                ext_temp=ext_temp,
+                humidity=humidity,
+                resistance=resistance,
+            )
+            api.write(payload, **config['api'])
 
         t2 = time.time()
         led.off()
