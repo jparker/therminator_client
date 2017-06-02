@@ -19,7 +19,7 @@ measured. If a DS18B20 is used, only the temperature will be measured.
 
 I'm still fleshing out this process.
 
-The client depends on RPi.GPIO, Adafruit\_DHT, and PyYAML.
+The client depends on RPi.GPIO, Adafruit\_DHT, PyYAML, and requests.
 
 ## Usage
 
