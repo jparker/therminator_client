@@ -30,5 +30,5 @@ def write(data, endpoint, api_key):
         logger.debug('Finished posting data ({:.1f}s)'.format(time))
     else:
         reason = response.reason
-        message = response.json.get('error')
+        message = response.json().get('error')
         logger.warning('Failed to post data: {}: {}'.format(reason, message))
