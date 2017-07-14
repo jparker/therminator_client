@@ -5,6 +5,7 @@ import argparse
 from datetime import datetime
 import logging
 import logging.config
+import os
 import time
 import yaml
 from RPi import GPIO
@@ -12,6 +13,8 @@ from RPi import GPIO
 from . import api
 from .led import LED
 from .sensors import *
+
+LOCKFILE = '/var/tmp/therminator.lock'
 
 SENSORS = {
     'pi': pi,
@@ -54,11 +57,29 @@ def setup_logger(config, debug=False):
 def lookup_sensor(name):
     return SENSORS[name]
 
+def lock(retries=120, logger=None):
+    for i in range(retries):
+        try:
+            with open(LOCKFILE, 'x') as f:
+                f.write(str(os.getpid()))
+            return
+        except FileExistsError:
+            time.sleep(1)
+            continue
+    logger.error('Failed to acquire lock.')
+
+def unlock():
+    try:
+        os.unlink(LOCKFILE)
+    except OSError:
+        pass
+
 def main():
     args = parse_args()
     config = load_config(args.config)
     logger = setup_logger(config['logging'], debug=args.debug)
 
+    lock(logger=logger)
     GPIO.setmode(GPIO.BCM)
 
     try:
@@ -107,5 +128,6 @@ def main():
         logger.debug('Completed therminator run')
     finally:
         GPIO.cleanup()
+        unlock()
 
 main()
