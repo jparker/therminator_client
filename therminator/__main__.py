@@ -57,22 +57,26 @@ def setup_logger(config, debug=False):
 def lookup_sensor(name):
     return SENSORS[name]
 
-def lock(retries=120, logger=None):
+def lock(logger, retries=120):
+    logger.debug('Acquiring lock')
     for i in range(retries):
         try:
             with open(LOCKFILE, 'x') as f:
                 f.write(str(os.getpid()))
+            logger.debug('Lock ackquired')
             return
         except FileExistsError:
             time.sleep(1)
             continue
-    logger.error('Failed to acquire lock.')
+    logger.error('Failed to acquire lock')
 
-def unlock():
+def unlock(logger):
     try:
+        logger.debug('Relinquishing lock')
         os.unlink(LOCKFILE)
+        logger.debug('Relinquished lock')
     except OSError:
-        pass
+        logger.warning('No lock to reqlinquish')
 
 def main():
     args = parse_args()
@@ -128,6 +132,6 @@ def main():
         logger.debug('Completed therminator run')
     finally:
         GPIO.cleanup()
-        unlock()
+        unlock(logger)
 
 main()
