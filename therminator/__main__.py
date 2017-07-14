@@ -33,6 +33,11 @@ def parse_args():
         action='store_true',
         help='Enable debugging output'
     )
+    parser.add_argument(
+        '-n', '--dry-run',
+        action='store_true',
+        help='Dry run -- do not post data to API'
+    )
     return parser.parse_args()
 
 def load_config(file):
@@ -80,7 +85,7 @@ def main():
         else:
             resistance = 0
 
-        if 'api' in config:
+        if not args.dry_run and 'api' in config:
             payload=dict(
                 timestamp=timestamp.isoformat(),
                 int_temp=int_temp,
