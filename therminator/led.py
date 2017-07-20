@@ -18,6 +18,17 @@ class LED:
         self.state = 'off'
 
 
+class NullLED:
+    def __init__(self, _):
+        pass
+
+    def on(self):
+        pass
+
+    def off(self):
+        pass
+
+
 if __name__ == '__main__':
     import argparse
     import time

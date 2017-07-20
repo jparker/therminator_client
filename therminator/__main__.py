@@ -11,7 +11,7 @@ import yaml
 from RPi import GPIO
 
 from . import api
-from .led import LED
+from .led import LED, NullLED
 from .sensors import *
 
 LOCKFILE = '/var/tmp/therminator.lock'
@@ -87,7 +87,10 @@ def main():
     GPIO.setmode(GPIO.BCM)
 
     try:
-        led = LED(**config['led'])
+        if 'led' in config:
+            led = LED(**config['led'])
+        else:
+            led = NullLED()
 
         logger.debug('Starting therminator run')
         led.on()
