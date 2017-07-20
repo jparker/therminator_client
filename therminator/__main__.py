@@ -124,11 +124,12 @@ def main():
         led.off()
 
         logger.info(
-            'int_temp={:.1f}C'
+            'timestamp={}'
+            ' int_temp={:.1f}C'
             ' ext_temp={:.1f}C humidity={:.1f}%'
             ' resistance={:.1f}ohms'
             ' runtime={:.1f}s'
-            .format(int_temp, ext_temp, humidity, resistance, t2-t1))
+            .format(timestamp.isoformat(), int_temp, ext_temp, humidity, resistance, t2-t1))
         logger.debug('Completed therminator run')
     finally:
         GPIO.cleanup()
