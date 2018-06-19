@@ -26,6 +26,7 @@ class App:
 
         self.__refresh(row=2, column=0)
         self.__close(row=2, column=2)
+        self.__timestamp(row=3, column=0, columnspan=3)
 
     def refresh(self):
         try:
@@ -41,6 +42,8 @@ class App:
             ext_temp, humidity = utils.lookup_sensor(sensor).read(**kwargs)
             self.ext_temp.set('{:.1f}°F'.format(ext_temp * 9/5 + 32))
             self.humidity.set('{:.1f}%'.format(humidity))
+            timestamp = datetime.now().strftime('%b %-d %Y %H:%M:%S')
+            self.timestamp.set('Last measurement taken {}'.format(timestamp))
         finally:
             utils.unlock(self.logger)
 
@@ -64,6 +67,12 @@ class App:
         label = Label(self.frame, textvariable=self.humidity)
         label.grid(**kwargs)
         label.config(font=('Ubuntu', 32))
+
+    def __timestamp(self, **kwargs):
+        self.timestamp = StringVar()
+        label = Label(self.frame, textvariable=self.timestamp)
+        label.grid(**kwargs)
+        label.config(font=('Ubuntu', 18))
 
     def __refresh(self, **kwargs):
         button = Button(self.frame, text='Refresh', command=self.refresh)
