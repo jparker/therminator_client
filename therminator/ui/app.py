@@ -41,7 +41,10 @@ class App:
             kwargs = self.config['temperature']['options']
             ext_temp, humidity = utils.lookup_sensor(sensor).read(**kwargs)
             self.ext_temp.set('{:.1f}°F'.format(ext_temp * 9/5 + 32))
-            self.humidity.set('{:.1f}%'.format(humidity))
+            if humidity is None:
+                self.humidity.set('—')
+            else:
+                self.humidity.set('{:.1f}%'.format(humidity))
             timestamp = datetime.now().strftime('%b %-d %Y %H:%M:%S')
             self.timestamp.set('Last measurement taken {}'.format(timestamp))
         finally:
