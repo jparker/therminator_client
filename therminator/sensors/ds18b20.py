@@ -33,7 +33,7 @@ def read(file, timeout=10, wait=0.2, threshold=32):
         )
     logger.info('temp={:.1f}C'.format(temp))
     logger.debug('Finished reading sensor ({:.1f}s)'.format(t2-t1))
-    return temp, 0
+    return temp, None
 
 def _read(file, timeout, wait):
     for _ in range(int(timeout/wait)):

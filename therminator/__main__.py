@@ -63,13 +63,15 @@ def main():
         t2 = time.time()
         led.off()
 
-        logger.info(
-            'timestamp={}'
-            ' int_temp={:.1f}C'
-            ' ext_temp={:.1f}C humidity={:.1f}%'
-            ' resistance={:.1f}ohms'
-            ' runtime={:.1f}s'
-            .format(timestamp.isoformat(), int_temp, ext_temp, humidity, resistance, t2-t1))
+        log_message = 'timestamp={}'.format(timestamp.isoformat())
+        log_message += ' int_temp={:.1f}C'.format(int_temp)
+        log_message += ' ext_temp={:.1f}C'.format(ext_temp)
+        if humidity is not None:
+            log_message += ' humidity={:.1f}%'.format(humidity)
+        log_message += ' resistance={:.1f}ohms'.format(resistance)
+        log_message += ' runtime={:.1f}s'.format(t2-t1)
+        logger.info(log_message)
+
         logger.debug('Completed therminator run')
     finally:
         GPIO.cleanup()
