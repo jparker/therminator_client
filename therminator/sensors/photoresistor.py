@@ -7,6 +7,8 @@ import signal
 import time
 from RPi import GPIO
 
+logger = logging.getLogger(__name__)
+
 def read(pins, capacitance, resistance, voltage=3.3, n=20, timeout=300):
     """Return the average resistance of the photoresistor.
 
@@ -18,7 +20,6 @@ def read(pins, capacitance, resistance, voltage=3.3, n=20, timeout=300):
     n -- the number of readings over which to average (default: 20)
     timeout -- the number of seconds after which to give up (default: 300)
     """
-    logger = logging.getLogger(__name__)
     logger.debug('Started reading sensor')
     try:
         t1 = time.time()
@@ -58,7 +59,9 @@ def _read(pins, C, R, V):
     a, b = pins
     try:
         _discharge(a, b)
-        return _charge(a, b)
+        elapsed_time = _charge(a, b)
+        logger.debug('elapsed-time={:f}s'.format(elapsed_time))
+        return elapsed_time
     finally:
         _discharge(a, b)
 
