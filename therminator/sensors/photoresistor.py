@@ -60,7 +60,7 @@ def _read(pins, C, R, V):
     try:
         _discharge(a, b)
         elapsed_time = _charge(a, b)
-        logger.debug('elapsed-time={:f}s'.format(elapsed_time))
+        logger.debug('elapsed-time={:f}us'.format(elapsed_time))
         return elapsed_time
     finally:
         _discharge(a, b)
