@@ -43,7 +43,10 @@ def _multiread(pins, C, R, V, n, timeout):
     try:
         signal.signal(signal.SIGALRM, _timeout)
         signal.alarm(timeout)
-        mean = sum([_read(pins, C, R, V) for _ in range(n)]) / n
+        data = [_read(pins, C, R, V) for _ in range(n+2)]
+        data.sort()
+        logger.debug('Discard min and max values: min={:f}us, max={:f}us'.format(data[0], data[-1]))
+        mean = sum(data[1:-1]) / n
     finally:
         signal.alarm(0)
     T = mean * (math.e-1)/math.e * V
@@ -115,9 +118,15 @@ if __name__ == '__main__':
                         type=int,
                         default=20,
                         help='Number of readings over which to average')
+    parser.add_argument('-d', '--debug',
+                        action='store_true',
+                        help='Enable deubgging output')
     args = parser.parse_args()
 
     try:
+        if args.debug:
+            logging.basicConfig(level=logging.DEBUG)
+
         GPIO.setmode(GPIO.BCM)
         resistance = read(
             pins=args.pins,
