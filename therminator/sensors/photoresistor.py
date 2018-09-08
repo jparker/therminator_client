@@ -33,6 +33,9 @@ def read(pins, capacitance, resistance, voltage=3.3, n=20, timeout=300):
         )
         t2 = time.time()
         logger.info('resistance={:.1f}ohms'.format(reading))
+        if reading < 0:
+            logger.warning('negative resistance will be normalized to 0.0')
+            reading = 0
         logger.debug('Finished reading sensor ({:.1f}s)'.format(t2-t1))
         return reading
     except TimeoutError as e:
