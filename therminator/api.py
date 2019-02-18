@@ -28,11 +28,11 @@ def write(data, endpoint, api_key, timeout=30):
         )
         if response.ok:
             time = response.elapsed.total_seconds()
-            logger.info('Data posted to API: {}'.format(response.reason))
+            logger.info('Data posted to {}: {}'.format(endpoint, response.reason))
             logger.debug('Finished posting data ({:.1f}s)'.format(time))
         else:
             reason = response.reason
             message = response.json().get('error')
-            logger.warning('Failed to post data: {}: {}'.format(reason, message))
+            logger.warning('Failed to post data to {}: {}: {}'.format(endpoint, reason, message))
     except requests.exceptions.RequestException as e:
         logger.warning('Failed to post data: {!r}'.format(e))
