@@ -1,6 +1,8 @@
 .*.swp
 *.pyc
+.cache/
 __pycache__/
+.pytest_cache/
 /env/
 /dist/
 /*.egg-info
