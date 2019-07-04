@@ -15,7 +15,7 @@ def write(data, endpoint, api_key, timeout=30, retries=10):
     api_key -- API account secret key
     """
     logger = logging.getLogger(__name__)
-    logger.debug('Started posting data')
+    logger.debug('Started posting data to {}'.format(endpoint))
 
     for i in range(1, retries+1):
         logger.debug('Attempt #{}'.format(i))
@@ -31,15 +31,15 @@ def write(data, endpoint, api_key, timeout=30, retries=10):
                 timeout=timeout,
             )
             if response.ok:
-                time = response.elapsed.total_seconds()
-                logger.info('Data posted to {}: {}'.format(endpoint, response.reason))
-                logger.debug('Finished posting data ({:.1f}s)'.format(time))
+                elapsed_time = response.elapsed.total_seconds()
+                logger.info('Data posted to server: {}'.format(response.reason))
+                logger.debug('Finished posting data ({:.1f}s)'.format(elapsed_time))
             else:
                 reason = response.reason
                 message = response.json().get('error')
-                logger.warning('Failed to post data to {}: {}: {}'.format(endpoint, reason, message))
+                logger.warning('Server failure: {}: {}'.format(reason, message))
             return
         except requests.exceptions.RequestException as e:
-            logger.warning('Failed to post data: {!r}'.format(e))
+            logger.warning('Network failure: {!r}'.format(e))
             time.sleep(2)
     logger.error('Giving up after {} attempts'.format(retries))
