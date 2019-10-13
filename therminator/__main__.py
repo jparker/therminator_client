@@ -50,31 +50,31 @@ def main():
         else:
             resistance = 0
 
-        if not args.dry_run and 'api' in config:
-            payload=dict(
-                timestamp=timestamp.isoformat(),
-                int_temp=int_temp,
-                ext_temp=ext_temp,
-                humidity=humidity,
-                resistance=resistance,
-            )
-            api.write(payload, **config['api'])
-
         t2 = time.time()
         led.off()
 
         log_message = 'timestamp={}'.format(timestamp.isoformat())
-        log_message += ' int_temp={:.1f}C'.format(int_temp)
-        log_message += ' ext_temp={:.1f}C'.format(ext_temp)
+        log_message += ' int_temp={:f}C'.format(int_temp)
+        log_message += ' ext_temp={:f}C'.format(ext_temp)
         if humidity is not None:
-            log_message += ' humidity={:.1f}%'.format(humidity)
-        log_message += ' resistance={:.1f}ohms'.format(resistance)
+            log_message += ' humidity={:f}%'.format(humidity)
+        log_message += ' resistance={:f}ohms'.format(resistance)
         log_message += ' runtime={:.1f}s'.format(t2-t1)
         logger.info(log_message)
-
-        logger.debug('Completed therminator run')
     finally:
         GPIO.cleanup()
         unlock(logger)
+
+    if not args.dry_run and 'api' in config:
+        payload = dict(
+            timestamp=timestamp.isoformat(),
+            int_temp=int_temp,
+            ext_temp=ext_temp,
+            humidity=humidity,
+            resistance=resistance,
+        )
+        api.write(payload, **config['api'])
+
+    logger.debug('Completed therminator run')
 
 main()
