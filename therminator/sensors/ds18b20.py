@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import glob
 import logging
 import time
 
-def read(file, timeout=10, wait=0.2, threshold=32):
+logger = logging.getLogger(__name__)
+
+def read(file=None, timeout=10, wait=0.2, threshold=32):
     """Return the external temperature.
 
     Keyword arguments:
@@ -17,8 +20,10 @@ def read(file, timeout=10, wait=0.2, threshold=32):
     two-element tuple to allow easier interchangibility with the DHT22 which
     returns temperature and humidity.
     """
-    logger = logging.getLogger(__name__)
-    logger.debug('Started reading sensor')
+    if file is None:
+        file = _discover()
+
+    logger.debug('Started reading sensor at {}'.format(file))
     t1 = time.time()
     try:
         temp = _read(file, timeout, wait)
@@ -48,13 +53,25 @@ def _raw_read(file):
     with open(file) as f:
         return f.read().splitlines()
 
+def _discover():
+    logger.debug('Discovering sensor')
+    sensors = glob.glob('/sys/devices/w1_bus_master1/28-*')
+    if len(sensors) == 0:
+        raise RuntimeError('Sensor discovery failed: no 1-wire interfaces exist')
+    elif len(sensors) > 1:
+        raise RuntimeError('Sensor discovery failed: more than one 1-wire interface exists')
+
+    file = '{}/w1_slave'.format(sensors[0])
+    logger.info('Discovered 1-wire interface file at {}'.format(file))
+
+    return file
+
 
 if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file',
-                        required=True,
                         help='Path to 1-wire serial interface file')
     parser.add_argument('-F', '--fahrenheit',
                         action='store_const',
@@ -72,7 +89,13 @@ if __name__ == '__main__':
                         metavar='N',
                         default=0.2,
                         help='Wait N seconds after failure before retrying')
+    parser.add_argument('-d', '--debug',
+                        action='store_true',
+                        help='Enable debugging output')
     args = parser.parse_args()
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
 
     temp, _ = read(args.file)
     print('temp={}'.format(args.convert(temp)))
